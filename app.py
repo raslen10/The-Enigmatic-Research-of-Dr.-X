@@ -157,6 +157,20 @@ def display_performance_metrics(processor):
         }
     )
 
+def render_upload_section(processor):
+    st.header("Upload New Documents")
+    uploaded_files = st.file_uploader(
+        "Select files to analyze (PDF, CSV, Excel, DOCX)",
+        type=["pdf", "csv", "xlsx", "xls", "docx"],
+        accept_multiple_files=True
+    )
+    
+    if uploaded_files:
+        if st.button("Process Uploaded Files"):
+            with st.spinner("Processing files..."):
+                result = processor.add_uploaded_files(uploaded_files)
+                st.success(f"Processed {len(uploaded_files)} file(s)")
+                st.rerun()
 def render_qa_tab(processor):
     st.header("Research Q&A System")
     
@@ -354,7 +368,7 @@ def main():
     inject_custom_css()
     processor = get_processor()
     
-    # Sidebar
+    # Sidebar (modifié pour inclure l'upload)
     with st.sidebar:
         st.title("🔍 Dr. X Research Analyzer")
         st.markdown("""
@@ -362,6 +376,8 @@ def main():
         Advanced tools for processing and analyzing Dr. X's research documents.
         """)
         
+        render_upload_section(processor)  # Nouvelle section d'upload
+        st.markdown("---")
         display_document_list(processor)
         st.markdown("---")
         
@@ -370,7 +386,7 @@ def main():
         
         display_performance_metrics(processor)
     
-    # Main content
+    # Main content (identique)
     st.title("Dr. X Research Analysis System")
     
     tab1, tab2, tab3 = st.tabs([
@@ -387,6 +403,7 @@ def main():
     
     with tab3:
         render_summarization_tab(processor)
+
 
 if __name__ == "__main__":
     main()

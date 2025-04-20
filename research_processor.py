@@ -19,7 +19,7 @@ from langdetect import detect
 DATA_FOLDER = "data"
 CHROMA_DB_PATH = "chroma_db"
 EMBEDDING_MODEL = "nomic-embed-text"
-LLM_MODEL = "mistral:7b-instruct-q4_K_M" #"llama3"
+LLM_MODEL = "llama3" #"llama3"
 MAX_CHUNK_SIZE = 500  # tokens
 MAX_WORKERS = 2 # Instead of 4 for CPU
 
@@ -56,6 +56,57 @@ class ResearchProcessor:
         """Validate and create required directories."""
         os.makedirs(DATA_FOLDER, exist_ok=True)
         os.makedirs(CHROMA_DB_PATH, exist_ok=True)
+    def add_uploaded_files(self, uploaded_files):
+        """Process and add uploaded files to the database"""
+        file_counts = {"pdf": 0, "docx": 0, "excel": 0, "csv": 0, "text": 0, "errors": 0}
+        
+        for uploaded_file in uploaded_files:
+            try:
+                # Save the file temporarily
+                file_path = os.path.join(DATA_FOLDER, uploaded_file.name)
+                with open(file_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                
+                # Process the file
+                texts, metadatas = self.process_file(file_path)
+                if not texts:
+                    continue
+                    
+                chunks, chunk_metadatas = self.chunk_text(texts, metadatas)
+                
+                with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+                    embeddings = list(executor.map(
+                        lambda chunk: ollama.embeddings(
+                            model=EMBEDDING_MODEL,
+                            prompt=chunk
+                        )['embedding'],
+                        chunks
+                    ))
+                
+                ids = [f"{uploaded_file.name}-{i}" for i in range(len(chunks))]
+                self.collection.add(
+                    documents=chunks,
+                    embeddings=embeddings,
+                    metadatas=chunk_metadatas,
+                    ids=ids
+                )
+                
+                # Update counts
+                ext = os.path.splitext(uploaded_file.name)[1].lower()
+                if ext == '.pdf': file_counts["pdf"] += 1
+                elif ext == '.docx': file_counts["docx"] += 1
+                elif ext in ('.xlsx', '.xls'): file_counts["excel"] += 1
+                elif ext == '.csv': file_counts["csv"] += 1
+                else: file_counts["text"] += 1
+                
+                # Remove the temporary file
+                os.remove(file_path)
+                
+            except Exception as e:
+                print(f"Error processing uploaded file {uploaded_file.name}: {str(e)}")
+                file_counts["errors"] += 1
+        
+        return file_counts
     
     def _track_performance(self, process: str, input_tokens: int, output_tokens: int, time_taken: float) -> PerformanceMetrics:
         """Track and store performance metrics."""
@@ -158,10 +209,10 @@ class ResearchProcessor:
             
         if file_path.endswith('.pdf'):
             return self.process_pdf(file_path)
-        #elif file_path.endswith('.docx'):
-        #    return self.process_docx(file_path)
-        #elif file_path.endswith(('.xlsx', '.xls', '.csv')):
-        #    return self.process_excel(file_path)
+        elif file_path.endswith('.docx'):
+            return self.process_docx(file_path)
+        elif file_path.endswith(('.xlsx', '.xls', '.csv')):
+            return self.process_excel(file_path)
         else:
             try:
                 with open(file_path, 'r', encoding='utf-8') as file:
