@@ -19,9 +19,9 @@ from langdetect import detect
 DATA_FOLDER = "data"
 CHROMA_DB_PATH = "chroma_db"
 EMBEDDING_MODEL = "nomic-embed-text"
-LLM_MODEL = "llama3"
+LLM_MODEL = "phi" #"llama3"
 MAX_CHUNK_SIZE = 500  # tokens
-MAX_WORKERS = 4
+MAX_WORKERS = 2 # Instead of 4 for CPU
 
 @dataclass
 class PerformanceMetrics:
@@ -33,6 +33,7 @@ class PerformanceMetrics:
 class ResearchProcessor:
     def __init__(self):
         self.tokenizer = tiktoken.get_encoding("cl100k_base")
+        self.max_context_size = 1024  # Reduced from 2048/4096
         self.scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
         self.performance_data = []
         self._init_vector_db()
@@ -348,54 +349,52 @@ class ResearchProcessor:
     def summarize_document(self, source_file: str, strategy: str = "abstractive") -> Tuple[str, dict, PerformanceMetrics]:
         """Generate document summary with quality metrics."""
         start_time = time.time()
-        
+
         try:
             results = self.collection.get(
                 where={"source": source_file},
                 include=["documents", "metadatas"]
             )
-            
+
             if not results['documents']:
                 return "Document not found", {}, None
-            
+
             context = "\n\n".join(
                 f"Source: {meta['source']} [{meta['position']}]\nContent: {doc}"
                 for doc, meta in zip(results['documents'], results['metadatas'])
             )
-            
+
             prompt = f"""Create {strategy} summary. Be concise and technical.
             Document: {context}
             Summary:"""
-            
+
             response = ollama.generate(
                 model=LLM_MODEL,
                 prompt=prompt,
                 options={'temperature': 0.3}
             )
             summary = response['response']
-            
-            # Calculate ROUGE scores safely
-            scores = {}
+
+            # Vérifiez que le texte de référence n'est pas vide
             sample_ref = " ".join(results['documents'][:3])
-            if sample_ref and summary:  # Only calculate if we have reference and summary
-                try:
-                    scores = self.scorer.score(sample_ref[:5000], summary)
-                except Exception as e:
-                    print(f"ROUGE calculation error: {str(e)}")
-                    scores = {}
-            
+            if not sample_ref.strip():
+                return summary, {}, None
+
+            # Calcul des scores ROUGE
+            scores = self.scorer.score(sample_ref[:5000], summary)
+
             metrics = self._track_performance(
                 f"summarize_{strategy}",
                 len(self.tokenizer.encode(prompt)),
                 len(self.tokenizer.encode(summary)),
                 time.time() - start_time
             )
-            
+
             return summary, scores, metrics
-            
+
         except Exception as e:
             print(f"Summarization error: {str(e)}")
-        return f"Error: {str(e)}", {}, None
+            return f"Error: {str(e)}", {}, None
     def ask_question(self, question: str, target_lang: str = None) -> Tuple[str, List[Dict], dict]:
         """Answer question using document context with optional translation."""
         start_time = time.time()

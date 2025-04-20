@@ -207,6 +207,14 @@ def render_translation_tab(processor):
         st.warning("No documents available for translation")
         return
     
+    # Initialize session state
+    if 'translation_data' not in st.session_state:
+        st.session_state.translation_data = {
+            'content': None,
+            'filename': None,
+            'last_translated': None  # (file, lang) tuple to check if we need retranslation
+        }
+
     with st.form("translation_form"):
         col1, col2 = st.columns(2)
         
@@ -226,37 +234,56 @@ def render_translation_tab(processor):
         submitted = st.form_submit_button("Translate Document", type="primary")
         
         if submitted and source_file:
-            with st.spinner("🌍 Translating document..."):
-                translated, metrics = processor.translate_document(
-                    source_file,
-                    target_lang
-                )
-                
-                st.markdown("### Translation Result")
-                st.markdown(f"""
-                    <div style="
-                        background-color: #f5f5f5;
-                        color: #003366;
-                        padding: 1.5rem;
-                        border-radius: 10px;
-                        border-left: 4px solid #4CAF50;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        margin-bottom: 1.5rem;
-                    ">
-                        {translated[:2000] + ('...' if len(translated) > 2000 else '')}
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                if len(translated) > 2000:
-                    st.warning("Displaying first 2000 characters. Download full translation below.")
-                    
-                    st.download_button(
-                        label="📥 Download Full Translation",
-                        data=translated,
-                        file_name=f"translated_{source_file}.txt",
-                        mime="text/plain",
-                        key=f"download_{source_file}"
+            # Check if we already have a translation for this file+lang combo
+            current_combo = (source_file, target_lang)
+            needs_translation = (
+                st.session_state.translation_data['last_translated'] != current_combo or
+                st.session_state.translation_data['content'] is None
+            )
+            
+            if needs_translation:
+                with st.spinner("🌍 Translating document..."):
+                    translated, metrics = processor.translate_document(
+                        source_file,
+                        target_lang
                     )
+                    
+                    # Store in session state
+                    st.session_state.translation_data = {
+                        'content': translated,
+                        'filename': source_file,
+                        'last_translated': current_combo
+                    }
+            else:
+                translated = st.session_state.translation_data['content']
+            
+            st.markdown("### Translation Result")
+            st.markdown(f"""
+                <div style="
+                    background-color: #f5f5f5;
+                    color: #003366;
+                    padding: 1.5rem;
+                    border-radius: 10px;
+                    border-left: 4px solid #4CAF50;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    margin-bottom: 1.5rem;
+                ">
+                    {translated[:2000] + ('...' if len(translated) > 2000 else '')}
+                </div>
+            """, unsafe_allow_html=True)
+            
+            if len(translated) > 2000:
+                st.warning("Displaying first 2000 characters. Download full translation below.")
+
+    # Download button outside the form
+    if st.session_state.translation_data['content']:
+        st.download_button(
+            label="📥 Download Full Translation",
+            data=st.session_state.translation_data['content'],
+            file_name=f"translated_{st.session_state.translation_data['filename']}.txt",
+            mime="text/plain",
+            key="download_translation"
+        )
 
 def render_summarization_tab(processor):
     st.header("Document Summarization")
@@ -275,10 +302,11 @@ def render_summarization_tab(processor):
                 [doc['source'] for doc in documents],
                 key="sum_file"
             )
+        
         with col2:
             strategy = st.radio(
                 "Summary type",
-                [strat.value for strat in SummaryStrategy],
+                ["abstractive", "extractive"],
                 key="sum_strat",
                 horizontal=True
             )
@@ -291,7 +319,8 @@ def render_summarization_tab(processor):
                     source_file,
                     strategy
                 )
-                
+                # Debug: Print the structure of scores
+                print("Debug - scores object structure:", scores)
                 st.markdown("### Summary")
                 st.markdown(f"""
                     <div style="
@@ -307,15 +336,20 @@ def render_summarization_tab(processor):
                     </div>
                 """, unsafe_allow_html=True)
                 
-                if scores:  # Only show metrics if scores are available
+                # Vérifiez si les scores sont disponibles
+                if scores and isinstance(scores, dict):
                     st.markdown("### Summary Quality Metrics")
                     cols = st.columns(3)
-                    cols[0].metric("ROUGE-1 F1", f"{scores.get('rouge1', {}).get('fmeasure', 0):.3f}")
-                    cols[1].metric("ROUGE-2 F1", f"{scores.get('rouge2', {}).get('fmeasure', 0):.3f}")
-                    cols[2].metric("ROUGE-L F1", f"{scores.get('rougeL', {}).get('fmeasure', 0):.3f}")
+                    
+                    rouge1 = scores.get('rouge1', {}).get('fmeasure', 0)
+                    rouge2 = scores.get('rouge2', {}).get('fmeasure', 0)
+                    rougeL = scores.get('rougeL', {}).get('fmeasure', 0)
+                    
+                    cols[0].metric("ROUGE-1 F1", f"{rouge1:.3f}")
+                    cols[1].metric("ROUGE-2 F1", f"{rouge2:.3f}")
+                    cols[2].metric("ROUGE-L F1", f"{rougeL:.3f}")
                 else:
-                    st.warning("Could not calculate quality metrics for this summary")
-# Main App
+                    st.warning("ROUGE scores could not be calculated. Please check the input data.")# Main App
 def main():
     inject_custom_css()
     processor = get_processor()
