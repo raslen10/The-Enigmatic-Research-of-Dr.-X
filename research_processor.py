@@ -19,7 +19,7 @@ from langdetect import detect
 DATA_FOLDER = "data"
 CHROMA_DB_PATH = "chroma_db"
 EMBEDDING_MODEL = "nomic-embed-text"
-LLM_MODEL = "phi" #"llama3"
+LLM_MODEL = "mistral:7b-instruct-q4_K_M" #"llama3"
 MAX_CHUNK_SIZE = 500  # tokens
 MAX_WORKERS = 2 # Instead of 4 for CPU
 
@@ -156,9 +156,9 @@ class ResearchProcessor:
         if not self._validate_document(file_path):
             return [], []
             
-        if file_path.endswith('.docx'):
+        if file_path.endswith('.pdf'):
             return self.process_pdf(file_path)
-        #elif file_path.endswith('.pdf'):
+        #elif file_path.endswith('.docx'):
         #    return self.process_docx(file_path)
         #elif file_path.endswith(('.xlsx', '.xls', '.csv')):
         #    return self.process_excel(file_path)
