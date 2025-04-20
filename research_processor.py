@@ -16,8 +16,8 @@ from rouge_score import rouge_scorer
 from langdetect import detect
 
 # Configuration
-DATA_FOLDER = "data"
-CHROMA_DB_PATH = "chroma_db"
+DATA_FOLDER = "/content/data"
+CHROMA_DB_PATH = "/content/chroma_db"
 EMBEDDING_MODEL = "nomic-embed-text"
 LLM_MODEL = "llama3" #"llama3"
 MAX_CHUNK_SIZE = 500  # tokens
