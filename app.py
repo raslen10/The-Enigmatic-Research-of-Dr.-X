@@ -15,7 +15,7 @@ class SummaryStrategy(Enum):
     ABSTRACTIVE = "abstractive"
     EXTRACTIVE = "extractive"
 
-# App layout (must be the first Streamlit command)
+# App layout
 st.set_page_config(
     page_title="Dr. X Research Analyzer",
     page_icon="🔍",
@@ -90,10 +90,19 @@ def inject_custom_css():
         h1, h2, h3 {
             color: var(--primary-color);
         }
+        
+        .file-card {
+            background-color: #f0f0f0; 
+            color: #003366; 
+            padding: 1rem; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
     </style>
     """, unsafe_allow_html=True)
 
-# Initialize processor (with caching)
+# Initialize processor
 @st.cache_resource
 def get_processor():
     processor = ResearchProcessor()
@@ -112,15 +121,14 @@ def display_document_list(processor):
     cols = st.columns(3)
     for i, doc in enumerate(documents):
         with cols[i % 3]:
-            with st.container():
-                st.markdown(f"""
-                <div class="card" style="background-color: #f0f0f0; color: #003366; padding: 1rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <h4 style="color: #003366;">{doc['source']}</h4>
-                    <p><strong>Type:</strong> {doc['type']}</p>
-                    <p><strong>Language:</strong> {doc['language']}</p>
-                    <p><strong>Chunks:</strong> {doc['chunks']}</p>
-                </div>
-                """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="file-card">
+                <h4 style="color: #003366; margin-top: 0;">{doc['source']}</h4>
+                <p><strong>Type:</strong> {doc['type']}</p>
+                <p><strong>Language:</strong> {doc['language']}</p>
+                <p><strong>Chunks:</strong> {doc['chunks']}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 def display_performance_metrics(processor):
     st.subheader("System Performance")
@@ -165,13 +173,14 @@ def render_qa_tab(processor):
             target_lang = st.selectbox(
                 "Translate answer to",
                 [lang.value for lang in TranslationLanguage],
+                index=0,
                 key="qa_lang"
             )
         
-        submitted = st.form_submit_button("Submit Question")
+        submitted = st.form_submit_button("Submit Question", type="primary")
         
         if submitted and question:
-            with st.spinner("Analyzing research..."):
+            with st.spinner("🔍 Analyzing research..."):
                 answer, sources, metrics = processor.ask_question(
                     question,
                     target_lang if target_lang != TranslationLanguage.NONE.value else None
@@ -187,11 +196,16 @@ def render_qa_tab(processor):
                 if sources:
                     st.markdown("### Source Documents")
                     for src in sources:
-                        with st.expander(f"{src['source']} [{src['position']}]"):
+                        with st.expander(f"📄 {src['source']} [{src['position']}]"):
                             st.text(src['content'])
 
 def render_translation_tab(processor):
     st.header("Document Translation")
+    
+    documents = processor.list_documents()
+    if not documents:
+        st.warning("No documents available for translation")
+        return
     
     with st.form("translation_form"):
         col1, col2 = st.columns(2)
@@ -199,7 +213,7 @@ def render_translation_tab(processor):
         with col1:
             source_file = st.selectbox(
                 "Select document to translate",
-                [doc['source'] for doc in processor.list_documents()],
+                [doc['source'] for doc in documents],
                 key="trans_file"
             )
         with col2:
@@ -209,10 +223,10 @@ def render_translation_tab(processor):
                 key="trans_lang"
             )
         
-        submitted = st.form_submit_button("Translate Document")
+        submitted = st.form_submit_button("Translate Document", type="primary")
         
         if submitted and source_file:
-            with st.spinner("Translating document..."):
+            with st.spinner("🌍 Translating document..."):
                 translated, metrics = processor.translate_document(
                     source_file,
                     target_lang
@@ -220,7 +234,15 @@ def render_translation_tab(processor):
                 
                 st.markdown("### Translation Result")
                 st.markdown(f"""
-                    <div class="card">
+                    <div style="
+                        background-color: #f5f5f5;
+                        color: #003366;
+                        padding: 1.5rem;
+                        border-radius: 10px;
+                        border-left: 4px solid #4CAF50;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        margin-bottom: 1.5rem;
+                    ">
                         {translated[:2000] + ('...' if len(translated) > 2000 else '')}
                     </div>
                 """, unsafe_allow_html=True)
@@ -229,14 +251,20 @@ def render_translation_tab(processor):
                     st.warning("Displaying first 2000 characters. Download full translation below.")
                     
                     st.download_button(
-                        label="Download Full Translation",
+                        label="📥 Download Full Translation",
                         data=translated,
                         file_name=f"translated_{source_file}.txt",
-                        mime="text/plain"
+                        mime="text/plain",
+                        key=f"download_{source_file}"
                     )
 
 def render_summarization_tab(processor):
     st.header("Document Summarization")
+    
+    documents = processor.list_documents()
+    if not documents:
+        st.warning("No documents available for summarization")
+        return
     
     with st.form("summary_form"):
         col1, col2 = st.columns(2)
@@ -244,7 +272,7 @@ def render_summarization_tab(processor):
         with col1:
             source_file = st.selectbox(
                 "Select document to summarize",
-                [doc['source'] for doc in processor.list_documents()],
+                [doc['source'] for doc in documents],
                 key="sum_file"
             )
         with col2:
@@ -255,10 +283,10 @@ def render_summarization_tab(processor):
                 horizontal=True
             )
         
-        submitted = st.form_submit_button("Generate Summary")
+        submitted = st.form_submit_button("Generate Summary", type="primary")
         
         if submitted and source_file:
-            with st.spinner("Creating summary..."):
+            with st.spinner("✂️ Creating summary..."):
                 summary, scores, metrics = processor.summarize_document(
                     source_file,
                     strategy
@@ -266,17 +294,27 @@ def render_summarization_tab(processor):
                 
                 st.markdown("### Summary")
                 st.markdown(f"""
-                    <div class="card">
+                    <div style="
+                        background-color: #f5f5f5;
+                        color: #003366;
+                        padding: 1.5rem;
+                        border-radius: 10px;
+                        border-left: 4px solid #4CAF50;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        margin-bottom: 1.5rem;
+                    ">
                         {summary}
                     </div>
                 """, unsafe_allow_html=True)
                 
-                st.markdown("### Summary Quality Metrics")
-                cols = st.columns(3)
-                cols[0].metric("ROUGE-1 F1", f"{scores['rouge1'].fmeasure:.3f}")
-                cols[1].metric("ROUGE-2 F1", f"{scores['rouge2'].fmeasure:.3f}")
-                cols[2].metric("ROUGE-L F1", f"{scores['rougeL'].fmeasure:.3f}")
-
+                if scores:  # Only show metrics if scores are available
+                    st.markdown("### Summary Quality Metrics")
+                    cols = st.columns(3)
+                    cols[0].metric("ROUGE-1 F1", f"{scores.get('rouge1', {}).get('fmeasure', 0):.3f}")
+                    cols[1].metric("ROUGE-2 F1", f"{scores.get('rouge2', {}).get('fmeasure', 0):.3f}")
+                    cols[2].metric("ROUGE-L F1", f"{scores.get('rougeL', {}).get('fmeasure', 0):.3f}")
+                else:
+                    st.warning("Could not calculate quality metrics for this summary")
 # Main App
 def main():
     inject_custom_css()
@@ -292,6 +330,10 @@ def main():
         
         display_document_list(processor)
         st.markdown("---")
+        
+        if st.button("🔄 Refresh Metrics"):
+            st.rerun()
+        
         display_performance_metrics(processor)
     
     # Main content
