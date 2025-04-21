@@ -15,6 +15,7 @@ Dr. X Research Analyzer is an advanced AI-powered Streamlit application designed
 - [Project Structure](#project-structure)
 - [Optimization Notes](#optimization-notes)
 - [Downloading Files](#downloading-files)
+- [Demo APP](#demo-app)
 - [License](#license)
 
 ## Features
@@ -432,6 +433,10 @@ To download the project files directly:
   ```
 
 For a pre-configured notebook, check the repository (if available) or create one by combining the setup commands and code.
+
+## DEMO - APP
+
+'   https://drive.google.com/file/d/1yX9VkqfkSt9mo0t_bSUh4xAiJfBi6DtL/view?usp=sharing '
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
