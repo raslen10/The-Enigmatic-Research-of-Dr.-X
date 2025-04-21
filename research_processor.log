@@ -1,0 +1,87 @@
+2025-04-21 07:27:09,901 - INFO - Using device: cpu
+2025-04-21 07:27:09,903 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 07:27:11,160 - INFO - Using default tokenizer.
+2025-04-21 07:27:11,162 - INFO - Initializing ChromaDB client at /content/drive/MyDrive/osos_task/chroma_db
+2025-04-21 07:27:13,162 - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-21 07:27:24,531 - INFO - ChromaDB collection initialized successfully
+2025-04-21 07:27:24,531 - INFO - Validating configuration and creating directories
+2025-04-21 07:27:24,531 - INFO - Directories validated: /content/drive/MyDrive/osos_task/data, /content/drive/MyDrive/osos_task/chroma_db
+2025-04-21 07:27:24,653 - INFO - Listed 0 unique documents
+2025-04-21 07:27:24,689 - INFO - Listed 0 unique documents
+2025-04-21 07:27:24,691 - INFO - Listed 0 unique documents
+2025-04-21 07:27:24,703 - INFO - Listed 0 unique documents
+2025-04-21 07:27:47,753 - INFO - Using device: cpu
+2025-04-21 07:27:47,764 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 07:27:47,788 - INFO - Listed 0 unique documents
+2025-04-21 07:27:47,820 - INFO - Listed 0 unique documents
+2025-04-21 07:27:47,820 - INFO - Listed 0 unique documents
+2025-04-21 07:27:47,836 - INFO - Listed 0 unique documents
+2025-04-21 07:27:50,432 - INFO - Using device: cpu
+2025-04-21 07:27:50,433 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 07:27:50,457 - INFO - Processing file: Loan amortisation schedule1.xlsx
+2025-04-21 07:27:50,463 - INFO - Validation for C:\Users\HP\AppData\Local\Temp\tmpgrc7_v1b.xlsx: True
+2025-04-21 07:27:50,464 - INFO - Processing Excel/CSV: C:\Users\HP\AppData\Local\Temp\tmpgrc7_v1b.xlsx
+2025-04-21 07:27:54,379 - INFO - Detected language: en
+2025-04-21 07:27:54,379 - INFO - Extracted content from C:\Users\HP\AppData\Local\Temp\tmpgrc7_v1b.xlsx
+2025-04-21 07:27:54,379 - INFO - Chunking 1 texts
+2025-04-21 07:27:54,396 - INFO - Generated 4 chunks
+2025-04-21 07:27:54,396 - INFO - Generated 4 chunks for Loan amortisation schedule1.xlsx
+2025-04-21 07:28:11,146 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 07:29:32,860 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 07:31:02,121 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 07:32:32,266 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 07:32:32,269 - INFO - Generated embeddings for Loan amortisation schedule1.xlsx
+2025-04-21 07:32:32,775 - INFO - Added 4 chunks to ChromaDB for Loan amortisation schedule1.xlsx
+2025-04-21 07:32:32,776 - INFO - File processing summary: {'pdf': 0, 'docx': 0, 'excel': 1, 'csv': 0, 'text': 0, 'errors': 0}
+2025-04-21 07:32:32,788 - INFO - Listed 1 unique documents
+2025-04-21 07:32:32,859 - INFO - Listed 1 unique documents
+2025-04-21 07:32:32,867 - INFO - Listed 1 unique documents
+2025-04-21 07:32:32,876 - INFO - Listed 1 unique documents
+2025-04-21 07:34:21,342 - INFO - Using device: cpu
+2025-04-21 07:34:21,342 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 07:34:21,367 - INFO - Listed 1 unique documents
+2025-04-21 07:34:21,381 - INFO - Listed 1 unique documents
+2025-04-21 07:34:21,393 - INFO - Listed 1 unique documents
+2025-04-21 07:34:21,409 - INFO - Listed 1 unique documents
+2025-04-21 11:40:41,572 - INFO - Using device: cpu
+2025-04-21 11:40:41,578 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 11:40:43,823 - INFO - Using default tokenizer.
+2025-04-21 11:40:43,824 - INFO - Initializing ChromaDB client at chroma_db
+2025-04-21 11:40:49,835 - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-21 11:41:07,850 - INFO - ChromaDB collection initialized successfully
+2025-04-21 11:41:07,851 - INFO - Validating configuration and creating directories
+2025-04-21 11:41:07,860 - INFO - Directories validated: data, chroma_db
+2025-04-21 11:41:09,387 - INFO - Listed 1 unique documents
+2025-04-21 11:41:09,518 - INFO - Listed 1 unique documents
+2025-04-21 11:41:09,722 - INFO - Listed 1 unique documents
+2025-04-21 11:41:09,913 - INFO - Listed 1 unique documents
+2025-04-21 11:41:15,673 - INFO - Using device: cpu
+2025-04-21 11:41:15,675 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 11:41:15,751 - INFO - Listed 1 unique documents
+2025-04-21 11:41:15,799 - INFO - Listed 1 unique documents
+2025-04-21 11:41:15,834 - INFO - Listed 1 unique documents
+2025-04-21 11:41:15,904 - INFO - Listed 1 unique documents
+2025-04-21 11:41:23,255 - INFO - Using device: cpu
+2025-04-21 11:41:23,272 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 11:41:23,315 - INFO - Listed 1 unique documents
+2025-04-21 11:41:23,469 - INFO - Listed 1 unique documents
+2025-04-21 11:41:23,666 - INFO - Listed 1 unique documents
+2025-04-21 11:41:23,877 - INFO - Listed 1 unique documents
+2025-04-21 11:41:26,028 - INFO - Using device: cpu
+2025-04-21 11:41:26,036 - WARNING - GPU not detected. Performance may be slower. Ensure Colab runtime is set to GPU.
+2025-04-21 11:41:26,103 - INFO - Processing file: Loan analysis.xlsx
+2025-04-21 11:41:26,106 - INFO - Validation for C:\Users\HP\AppData\Local\Temp\tmpeyyfbh41.xlsx: True
+2025-04-21 11:41:26,115 - INFO - Processing Excel/CSV: C:\Users\HP\AppData\Local\Temp\tmpeyyfbh41.xlsx
+2025-04-21 11:41:29,452 - INFO - Detected language: en
+2025-04-21 11:41:29,458 - INFO - Extracted content from C:\Users\HP\AppData\Local\Temp\tmpeyyfbh41.xlsx
+2025-04-21 11:41:29,460 - INFO - Chunking 1 texts
+2025-04-21 11:41:29,509 - INFO - Generated 11 chunks
+2025-04-21 11:41:29,510 - INFO - Generated 11 chunks for Loan analysis.xlsx
+2025-04-21 11:42:56,554 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:44:25,655 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:46:13,864 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:47:46,912 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:49:18,684 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:50:54,762 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:52:28,697 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-04-21 11:54:01,148 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
