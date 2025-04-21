@@ -318,6 +318,7 @@ The application uses Ollama to run local LLMs and embedding models. Below is the
    streamlit run app.py
    ```
 4. Access the app at `http://localhost:8501`.
+   ⚠️ Ensure that the paths to your data folder and Chroma DB folder are correct in app.py or any configuration files you're using, and update them if necessary.
 
 ### Running on Google Colab
 1. Follow the [Colab Setup](#google-colab-setup) steps to install dependencies, Ollama, and `localtunnel`.
@@ -340,6 +341,7 @@ The application uses Ollama to run local LLMs and embedding models. Below is the
 
    **Step 3: Run Streamlit in Background**  
    Start the Streamlit app in the background, redirecting logs to a file. Adjust the path to `app.py` if it’s stored elsewhere.
+   ⚠️ Make sure to verify the path to your app.py file and adjust it if it's stored in a different location (e.g., /content/app.py or another directory).
 
    ```bash
    !streamlit run /content/drive/MyDrive/Osos_Project/app.py &>/content/logs.txt &
@@ -352,7 +354,7 @@ The application uses Ollama to run local LLMs and embedding models. Below is the
    !npx localtunnel --port 8501
    ```
 
-4. Visit the generated `localtunnel` URL (e.g., `https://<random>.loca.lt`). When prompted, enter the external IP address from Step 1 to access the Streamlit app.
+5. Visit the generated `localtunnel` URL (e.g., `https://<random>.loca.lt`). When prompted, enter the external IP address from Step 1 to access the Streamlit app.
 
 **Note**: Colab's free tier has resource limits. For heavy processing, consider Colab Pro for better GPU access. If the `localtunnel` URL fails, ensure the Streamlit server is running (`!ps aux | grep streamlit`) and restart the tunneling command.
 
@@ -367,7 +369,7 @@ drx_research_analyzer/
 │   ├── processor.py         # ResearchProcessor and ModelManager classes
 │   ├── config.py           # MODEL_CONFIG and other constants
 │   ├── utils.py            # Helper functions (e.g., detect_language, chunk_text)
-├── data/                    # Folder for uploaded files
+├── data/                    # Folder for uploaded files ( use this files for testing )
 ├── chroma_db/               # ChromaDB persistence
 ├── requirements.txt         # Dependencies
 ├── research_processor.log   # Log file
